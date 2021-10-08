@@ -26,16 +26,19 @@ public class LeetCode206 {
     }
 
     public static ListNode reverseList2(ListNode head) {
-        ListNode prev = null;
-        ListNode cur = head;
-
-        while (cur != null) {
-            ListNode nextNode = cur.next;
-            cur.next = prev;
-            prev = cur;
-            cur = nextNode;
+        if (head == null) {
+            return null;
         }
-        return head;
+
+        ListNode curA = null;
+        ListNode curB = head;
+        while (curB != null) {
+            ListNode tmp = curB.next;
+            curB.next = curA;
+            curA = curB;
+            curB = tmp;
+        }
+        return curA;
     }
 
     public static void main(String[] args) {
