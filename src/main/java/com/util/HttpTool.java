@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,18 +28,24 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
 /**
- * Httpclient工具类
- *
- * @author sunnyzyq
- * @since 2019/04/22
+ * @author WhomHim
+ * @description Httpclient工具类
+ * @date Create in 2021/7/12 11:42
  */
 public class HttpTool {
 
-    private static final int BYTE_LEN = 102400; // 100KB
-    private static final String CHARSET = "UTF-8";  // 编码格式
+    /**
+     * 100KB
+     */
+    private static final int BYTE_LEN = 102400;
+    /**
+     * 编码格式
+     */
+    private static final String CHARSET = "UTF-8";
 
     /**
      * get请求
+     *
      * @param url 请求地址（get请求时参数自己组装到url上）
      * @return 响应文本
      */
@@ -51,7 +58,8 @@ public class HttpTool {
 
     /**
      * get请求
-     * @param url 请求地址（get请求时参数自己组装到url上）
+     *
+     * @param url       请求地址（get请求时参数自己组装到url上）
      * @param headerMap 请求头
      * @return 响应文本
      */
@@ -69,15 +77,16 @@ public class HttpTool {
 
     /**
      * post 请求
-     * @param url 请求地址
+     *
+     * @param url    请求地址
      * @param params 请求参数
      * @return 响应文本
      */
-    public static String post(String url, Map<String, String> params){
+    public static String post(String url, Map<String, String> params) {
         // 构建post请求
         HttpPost post = new HttpPost(url);
         // 构建请求参数
-        List<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
+        List<BasicNameValuePair> pairs = new ArrayList<>();
         if (params != null) {
             for (Entry<String, String> entry : params.entrySet()) {
                 pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -90,13 +99,14 @@ public class HttpTool {
             e.printStackTrace();
         }
         post.setEntity(entity);
-        // 执行情趣，获取相应
+        // 获取响应信息
         return getRespString(post);
     }
 
     /**
      * 文件上传
-     * @param url 请求地址
+     *
+     * @param url    请求地址
      * @param params 请求参数 （文件类型须为File）
      * @return 响应文本
      */
@@ -107,7 +117,7 @@ public class HttpTool {
             for (String key : params.keySet()) {
                 Object value = params.get(key);
                 if (value == null) {
-                    builder.addPart(key, new StringBody("",ContentType.TEXT_PLAIN));
+                    builder.addPart(key, new StringBody("", ContentType.TEXT_PLAIN));
                     continue;
                 }
                 if (value instanceof File) {
@@ -134,9 +144,9 @@ public class HttpTool {
         File file = new File(name);
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            byte b[] = new byte[BYTE_LEN];
-            int j = 0;
-            while( (j = in.read(b)) != -1){
+            byte[] b = new byte[BYTE_LEN];
+            int j;
+            while ((j = Objects.requireNonNull(in).read(b)) != -1) {
                 fos.write(b, 0, j);
             }
             fos.close();
@@ -155,7 +165,7 @@ public class HttpTool {
         StringBuilder sb = new StringBuilder();
         String line;
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(in)));
         try {
             while ((line = br.readLine()) != null) {
                 sb.append(line);
@@ -163,8 +173,7 @@ public class HttpTool {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String str = sb.toString();
-        return str;
+        return sb.toString();
     }
 
     /**
@@ -187,7 +196,7 @@ public class HttpTool {
         InputStream in = null;
         if (entity != null) {
             try {
-                in =  entity.getContent();
+                in = entity.getContent();
             } catch (Exception e) {
                 e.printStackTrace();
             }

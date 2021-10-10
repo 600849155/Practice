@@ -1,40 +1,76 @@
 package com.util;
 
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import com.wechat.Resp;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.jsoup.nodes.Attribute;
+
+/**
+ * @author WhomHim
+ * @description
+ * @date Create in 2021/7/12 11:41
+ */
 public class SpiderUtil {
 
-    // 微信公众号文章域名
+    /**
+     * 微信公众号文章域名
+     */
     private static final String WX_DOMAIN = "https://mp.weixin.qq.com";
     // 文章返回前端统一key常量
-    private static final String KEY_TITLE = "title"; // 文章标题
-    private static final String KEY_COVER_URL = "coverLink"; // 文章封面图链接
-    private static final String KEY_REFER_NAME = "referName"; // 文章出处作者
-    private static final String KEY_REFER_URL = "referLink"; // 文章出处链接
-    private static final String KEY_TAGS = "tags"; // 文章内容
-    private static final String KEY_NAME = "name"; // 标签名称
-    private static final String KEY_TEXT = "text"; // 文本信息
-    private static final String KEY_HREF = "href"; // a标签链接
+    /**
+     * 文章标题
+     */
+    private static final String KEY_TITLE = "title";
+    /**
+     * 文章封面图链接
+     */
+    private static final String KEY_COVER_URL = "coverLink";
+    /**
+     * 文章出处作者
+     */
+    private static final String KEY_REFER_NAME = "referName";
+    /**
+     * 文章出处链接
+     */
+    private static final String KEY_REFER_URL = "referLink";
+    /**
+     * 文章内容
+     */
+    private static final String KEY_TAGS = "tags";
+    /**
+     * 文章内容
+     */
+    private static final String CONTENT = "content";
+    /**
+     * 标签名称
+     */
+    private static final String KEY_NAME = "name";
+    /**
+     * 文本信息
+     */
+    private static final String KEY_TEXT = "text";
+    /**
+     * 标签链接
+     */
+    private static final String KEY_HREF = "href";
 
     /**
      * 测试主方法
      */
-    public static void main(String args[]) {
-        String url = "https://mp.weixin.qq.com/s?__biz=MzAwNzQ5ODk3Nw==&mid=2651052296&idx=1&sn=ea0902f7f6e9fe64601b8d034a84c41b&chksm=808a4486b7fdcd90a06c3855e7ba4ebe102ec3084ea3f409432be49f253bf4c82a5a0eaae77f#rd";
-        Resp<JSONObject> resp = getActicle(url);
+    public static void main(String[] args) {
+        String url = "https://mp.weixin.qq.com/s/be1Bswj0INxh3GwthHMthg";
+        Resp<JSONObject> resp = getArticle(url);
         if (resp.isSuccess()) {
             System.out.println(resp.getBody());
         } else {
@@ -48,7 +84,7 @@ public class SpiderUtil {
      * @param url 文章链接
      * @return 文章内容
      */
-    public static Resp<JSONObject> getActicle(String url) {
+    public static Resp<JSONObject> getArticle(String url) {
         // 检测链接是否合法
         String msg = checkUrl(url);
         if (msg != null) {
@@ -56,15 +92,15 @@ public class SpiderUtil {
         }
         // 请求与响应
         String resp = HttpTool.get(url, getWxHeaderMap());
-        if (resp == null || resp.trim().length() == 0) {
+        if (resp.trim().length() == 0) {
             return Resp.error("文章获取失败，请检查链接是否正确");
         }
         // 解析
-        Resp<JSONObject> acticleResp = getWxActicleContent(resp, url);
-        if (acticleResp.isError()) {
-            return Resp.error(acticleResp.getMsg());
+        Resp<JSONObject> articleResp = getWxArticleContent(resp, url);
+        if (articleResp.isError()) {
+            return Resp.error(articleResp.getMsg());
         }
-        return acticleResp;
+        return articleResp;
     }
 
     /**
@@ -100,10 +136,10 @@ public class SpiderUtil {
      * 解析微信公众号文章
      *
      * @param resp 请求文章响应
-     * @param url 文章链接
+     * @param url  文章链接
      * @return 文章信息
      */
-    public static Resp<JSONObject> getWxActicleContent(String resp, String url) {
+    public static Resp<JSONObject> getWxArticleContent(String resp, String url) {
         try {
             Document document = Jsoup.parse(resp);
             // 文章出处（作者）
@@ -139,7 +175,8 @@ public class SpiderUtil {
         String tagName = element.tagName();
         tag.put(KEY_NAME, tagName);
         switch (tagName) {
-            case "span": {
+            case "span":
+            case "p": {
                 tag.put(KEY_TEXT, element.text());
                 tags.add(tag);
                 break;
@@ -161,11 +198,6 @@ public class SpiderUtil {
                 break;
             }
             case "br": {
-                tags.add(tag);
-                break;
-            }
-            case "p": {
-                tag.put(KEY_TEXT, element.text());
                 tags.add(tag);
                 break;
             }
