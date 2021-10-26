@@ -39,14 +39,19 @@ public class LeetCode92 {
             preB = temp;
         }
         //1 -> 4,3,2
-        Objects.requireNonNull(beginNode).next = midNode;
+        if (beginNode != null) {
+            beginNode.next = midNode;
+        }
 
-        // 将 midNode 的最后一个元素指向 5
+        // midPre 指向 midNode 最后一个元素
         ListNode midPre = midNode;
         while (midPre != null && midPre.next != null) {
             midPre = midPre.next;
         }
-        midPre.next = endNode;
+        // 将 midNode 的最后一个元素指向 5
+        if (midPre != null) {
+            midPre.next = endNode;
+        }
 
 
         return beginNode;
