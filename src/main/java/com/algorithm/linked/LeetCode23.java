@@ -13,7 +13,7 @@ public class LeetCode23 {
         if (lists[0] == null) {
             return null;
         }
-        ListNode returnNode = new ListNode();
+        ListNode returnNode = null;
         for (ListNode list : lists) {
             returnNode = mergeTwoLists(returnNode, list);
         }
