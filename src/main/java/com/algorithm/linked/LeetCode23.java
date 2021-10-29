@@ -3,9 +3,23 @@ package com.algorithm.linked;
 /**
  * @author WhomHim
  * @description
- * @date Create in 2021/5/4 1:50
+ * @date Create in 2021/10/28 10:26
  */
-public class LeetCode21 {
+public class LeetCode23 {
+    public static ListNode mergeKLists(ListNode[] lists) {
+        if (lists.length == 0) {
+            return null;
+        }
+        if (lists[0] == null) {
+            return null;
+        }
+        ListNode returnNode = null;
+        for (ListNode list : lists) {
+            returnNode = mergeTwoLists(returnNode, list);
+        }
+        return returnNode;
+    }
+
     public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode preHead = new ListNode(-1);
 
@@ -40,7 +54,9 @@ public class LeetCode21 {
         ListNode blue3 = new ListNode(6);
         blue1.next = blue2;
         blue2.next = blue3;
-        final ListNode listNode = mergeTwoLists(red1, blue1);
+
+        ListNode[] listNodes = new ListNode[]{red1, blue1};
+        final ListNode listNode = mergeKLists(listNodes);
         System.out.println(listNode);
     }
 }
