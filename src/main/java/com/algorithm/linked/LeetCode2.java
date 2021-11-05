@@ -1,6 +1,5 @@
 package com.algorithm.linked;
 
-import lombok.val;
 
 /**
  * @author WhomHim
